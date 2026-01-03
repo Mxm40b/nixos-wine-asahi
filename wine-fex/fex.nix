@@ -7,7 +7,7 @@ with pkgs;
 let
   toolchain = (pkgs.callPackage ../llvm-toolchain/llvm-toolchain-fetched.nix {});
   # the toolchain does not currently build in the nix derivation, so I am fetching
-  # it. It should only depend on itself, so no patchelf needed.
+  # it instead. It should only depend on itself, so no patchelf needed.
 
   stdenv = pkgs.overrideCC pkgs.stdenv (pkgs.clang.override { cc = toolchain; });
   # stdenv overridden because overrideCC seemed like it could fix some errors,

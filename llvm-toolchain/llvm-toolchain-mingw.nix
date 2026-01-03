@@ -57,36 +57,37 @@ in
 stdenv.mkDerivation {
 
   
-    cmakeFlags = # attempt to fix compiler not supporting rtti, not working for now
-      let
-        # These flags influence llvm-config's BuildVariables.inc in addition to the
-        # general build. We need to make sure these are also passed via
-        # CROSS_TOOLCHAIN_FLAGS_NATIVE when cross-compiling or llvm-config-native
-        # will return different results from the cross llvm-config.
-        #
-        # Some flags don't need to be repassed because LLVM already does so (like
-        # CMAKE_BUILD_TYPE), others are irrelevant to the result.
-        flagsForLlvmConfig = [
-          (lib.cmakeFeature "LLVM_INSTALL_PACKAGE_DIR" "${placeholder "dev"}/lib/cmake/llvm")
-          (lib.cmakeBool "LLVM_ENABLE_RTTI" true)
-          # (lib.cmakeBool "LLVM_LINK_LLVM_DYLIB" enableSharedLibraries)
-          # (lib.cmakeFeature "LLVM_TABLEGEN" "${buildLlvmPackages.tblgen}/bin/llvm-tblgen")
-        ];
-      in
-      flagsForLlvmConfig
-      ++ [
-        (lib.cmakeBool "LLVM_INSTALL_UTILS" true) # Needed by rustc
-        # (lib.cmakeBool "LLVM_BUILD_TESTS" finalAttrs.finalPackage.doCheck)
-        (lib.cmakeBool "LLVM_ENABLE_FFI" true)
-        # (lib.cmakeFeature "LLVM_HOST_TRIPLE" stdenv.hostPlatform.config)
-        # (lib.cmakeFeature "LLVM_DEFAULT_TARGET_TRIPLE" stdenv.hostPlatform.config)
-        (lib.cmakeBool "LLVM_ENABLE_DUMP" true)
-        (lib.cmakeBool "LLVM_ENABLE_TERMINFO" true)
-        # (lib.cmakeBool "LLVM_INCLUDE_TESTS" finalAttrs.finalPackage.doCheck)
-      ];
+    # cmakeFlags = 
+    #   let
+    #     # These flags influence llvm-config's BuildVariables.inc in addition to the
+    #     # general build. We need to make sure these are also passed via
+    #     # CROSS_TOOLCHAIN_FLAGS_NATIVE when cross-compiling or llvm-config-native
+    #     # will return different results from the cross llvm-config.
+    #     #
+    #     # Some flags don't need to be repassed because LLVM already does so (like
+    #     # CMAKE_BUILD_TYPE), others are irrelevant to the result.
+    #     flagsForLlvmConfig = [
+    #       (lib.cmakeFeature "LLVM_INSTALL_PACKAGE_DIR" "${placeholder "dev"}/lib/cmake/llvm")
+    #       (lib.cmakeBool "LLVM_ENABLE_RTTI" true)
+    #       # (lib.cmakeBool "LLVM_LINK_LLVM_DYLIB" enableSharedLibraries)
+    #       # (lib.cmakeFeature "LLVM_TABLEGEN" "${buildLlvmPackages.tblgen}/bin/llvm-tblgen")
+    #     ];
+    #   in
+    #   flagsForLlvmConfig
+    #   ++ [
+    #     (lib.cmakeBool "LLVM_INSTALL_UTILS" true) # Needed by rustc
+    #     # (lib.cmakeBool "LLVM_BUILD_TESTS" finalAttrs.finalPackage.doCheck)
+    #     (lib.cmakeBool "LLVM_ENABLE_FFI" true)
+    #     # (lib.cmakeFeature "LLVM_HOST_TRIPLE" stdenv.hostPlatform.config)
+    #     # (lib.cmakeFeature "LLVM_DEFAULT_TARGET_TRIPLE" stdenv.hostPlatform.config)
+    #     (lib.cmakeBool "LLVM_ENABLE_DUMP" true)
+    #     (lib.cmakeBool "LLVM_ENABLE_TERMINFO" true)
+    #     # (lib.cmakeBool "LLVM_INCLUDE_TESTS" finalAttrs.finalPackage.doCheck)
+    #   ];
 
 
-  
+    # flags copied from the official nixos wiki for making llvm toolchains work in a nix shell
+    # this is an attempt at fixing compiler not supporting rtti error, but this does not fix anything.
 
 
 
@@ -209,6 +210,7 @@ stdenv.mkDerivation {
 
        # doing same as in Dockerfile but splitting in builds of mingw runtime
        # and compiler-rt/libunwind/libcxxabi/libcxx runtimes
+       # this speeds up testing as we are only building the problematic half each time
     # cd ..
     '';
   
